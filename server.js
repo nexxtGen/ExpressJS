@@ -1,37 +1,45 @@
 var express = require('express');
+var path = require('path')
 var fs = require('fs');
 var app = express();
 var bodyParser = require('body-parser');
 //app.use(bodyParser.json());
 
-
-
-app.use('/store', function(req, res, next){
-    console.log('Jestem pośrednikiem przy żądaniu do /store, biorę 50% z góry');
+app.use('/', function(req, res, next){
+    console.log("Użytkownik nie jest zalogowany.");
     next();
 });
 
-app.use('/userform', function(req, res, next){
+app.get('/', function(req, res) {    
+    res.send('Witaj na stronie głównej. >>ZALOGUJ<< by mieć dostęp do aplikacji.');
+    //res.send('Hello światt');
+});
+
+app.use('/:id', function(req, res, next){
+    console.log("Autoryzajca użytkownika o id:" + req.params.id);
+    next();
+});
+
+app.use('/:id', function(req, res, next){
+    console.log("Sprawdzanie uprawnień użytkownika o id: " + req.params.id);
+    next();
+});
+
+app.get('/:id', function(req, res){    
+    const index = path.join(__dirname, 'assets', 'form.html');
+    res.sendFile(index);    
+});
+
+app.use('/userform/:id', function(req, res, next){
     console.log('Jestem pośrednikiem w tym formularzu.');
     next();
 });
 
-app.use(express.static('assets'));
-//next();
-
-app.get('/', function(req, res){
-    res.sendFile('/index.html');
-    //res.send('Hello światt');
-});
-
-app.get('/store', function(req, res) {
-    res.send('To jest shop.');
-});
-
-app.get('/userform', function(req, res){
+app.get('/userform/:id', function(req, res){
     const response = {
         first_name: req.query.first_name,
-        last_name: req.query.last_name
+        last_name: req.query.last_name,
+        user_id: req.params.id
     };
     res.end(JSON.stringify(response));
 });
