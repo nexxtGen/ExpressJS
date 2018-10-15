@@ -24,6 +24,7 @@ app.post('/updateNote/:note', function(req, res){
             if (err) throw err;
             console.log('file updated');
         });
+        res.send('Data updated! check "/getNote" url');
 });
 
 app.listen(3000);
